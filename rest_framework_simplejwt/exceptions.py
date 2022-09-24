@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, status
-
+from rest_framework.exceptions import _get_error_details, APIException
 
 class TokenError(Exception):
     pass

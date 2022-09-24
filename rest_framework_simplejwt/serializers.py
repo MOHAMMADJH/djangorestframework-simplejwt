@@ -3,6 +3,7 @@ from django.contrib.auth.models import update_last_login
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt import exceptions as _exp
 from collections import OrderedDict
 
 from .settings import api_settings
@@ -27,7 +28,7 @@ class TokenObtainSerializer(serializers.Serializer):
     username_field = get_user_model().USERNAME_FIELD
     default_error_messages = {
         'no_active_account': _('No active account found with the given credentials'),
-        'account_found':_('account found')
+        'account_Not_found':_('account_Not_found')
     }
 
     def __init__(self, *args, **kwargs):
@@ -49,9 +50,9 @@ class TokenObtainSerializer(serializers.Serializer):
 
             attrs_dict['email'] = c_user.first().email
         except:
-            raise exceptions.AuthenticationFailed(
-                self.error_messages['no_active_account'],
-                'account_found',)
+            raise _exp.AuthenticationFailed(
+                self.error_messages['account_Not_found'],
+                'account_Not_found',)
         attrs_ordar = OrderedDict()
         attrs_ordar['email'] = attrs_dict['email']
         attrs_ordar['password'] = attrs_dict['password']
@@ -70,7 +71,7 @@ class TokenObtainSerializer(serializers.Serializer):
         self.user = authenticate(**authenticate_kwargs)
 
         if not api_settings.USER_AUTHENTICATION_RULE(self.user):
-            raise exceptions.AuthenticationFailed(
+            raise _exp.ActivationFailed(
                 self.error_messages['no_active_account'],
                 'no_active_account',
             )
